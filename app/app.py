@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import preprocessor
 import helper
+import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.set_page_config(layout="wide")
 
@@ -64,3 +67,28 @@ if user_menu == "Overall Analysis":
     with col3:
         st.header("Nations")
         st.header(nations)
+
+    
+    st.write("")
+    nations_over_time = helper.data_over_time(df, 'region')
+    fig = px.line(nations_over_time, x='Edition', y='region Count')
+    st.title("Participating Nations Over Time")
+    st.plotly_chart(fig)
+
+    st.write("")
+    events_over_time = helper.data_over_time(df, 'Event')
+    fig = px.line(events_over_time, x='Edition', y='Event Count')
+    st.title("Events Over Time")
+    st.plotly_chart(fig)
+
+    st.write("")
+    athlete_over_time = helper.data_over_time(df, 'Name')
+    fig = px.line(athlete_over_time, x='Edition', y='Name Count')
+    st.title("Athletes Over Time")
+    st.plotly_chart(fig)
+
+    st.title("No. of Events over Time for Every Sport")
+    fig, ax = plt.subplots(figsize=(20, 20))
+    x = df.drop_duplicates(['Year', 'Sport', 'Event'])
+    ax = sns.heatmap(x.pivot_table(index='Sport', columns='Year', values='Event', aggfunc='count').fillna(0).astype(int), annot=True)
+    st.pyplot(fig)

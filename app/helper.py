@@ -35,3 +35,10 @@ def fetch_medal_tally(df, year, country):
 
     x['total'] = x['Gold'] + x['Silver'] + x['Bronze']
     return x
+
+
+def data_over_time(df, col):
+    temp_df = df.drop_duplicates(['Year', col])
+    result = temp_df.groupby('Year').count()[col].reset_index()
+    result.rename(columns={'Year': 'Edition', col: f'{col} Count'}, inplace=True)
+    return result
