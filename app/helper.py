@@ -42,3 +42,29 @@ def data_over_time(df, col):
     result = temp_df.groupby('Year').count()[col].reset_index()
     result.rename(columns={'Year': 'Edition', col: f'{col} Count'}, inplace=True)
     return result
+
+def most_successful(df, sport):
+    temp_df = df.dropna(subset=['Medal'])
+
+    if sport != 'Overall':
+        temp_df = temp_df[temp_df['Sport'] == sport]
+
+    top_athletes = temp_df['Name'].value_counts().reset_index().head(15)
+    top_athletes.columns = ['Name', 'Medal Count']
+
+    merged = top_athletes.merge(df, on='Name', how='left')[['Name', 'Medal Count', 'region', 'Sport']].drop_duplicates('Name')
+
+    return merged
+
+def country_medal_tally(df, country):
+    temp_df = df.dropna(subset=['Medal'])
+    temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Medal', 'Event'], inplace=True)
+
+    if country == 'Overall':
+        medal_tally = temp_df.groupby('Year').size().reset_index(name='Medal Count')
+    else:
+        country_df = temp_df[temp_df['region'] == country]
+        medal_tally = country_df.groupby('Year').size().reset_index(name='Medal Count')
+
+    return medal_tally
+

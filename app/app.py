@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import preprocessor
 import helper
 import plotly.express as px
@@ -92,3 +93,30 @@ if user_menu == "Overall Analysis":
     x = df.drop_duplicates(['Year', 'Sport', 'Event'])
     ax = sns.heatmap(x.pivot_table(index='Sport', columns='Year', values='Event', aggfunc='count').fillna(0).astype(int), annot=True)
     st.pyplot(fig)
+
+    st.title("Most Successful Athletes")
+    sportList = df['Sport'].unique().tolist()
+    sportList.sort()
+    sportList.insert(0, 'Overall')
+
+    selected_sport = st.selectbox('Select a Sport', sportList)
+    x = helper.most_successful(df, selected_sport)
+    st.table(x)
+
+if user_menu == "Country-wise Analysis":
+    st.title("Country-wise Analysis")
+    country = np.unique(df['region'].dropna().values).tolist()
+    country.insert(0, 'Overall')
+    selected_country = st.selectbox("Select the Country", country)
+
+    country_df = helper.country_medal_tally(df, selected_country)
+
+    if selected_country == "Overall":
+        st.subheader("Overall Medal Trend Across All Countries")
+    else:
+        st.subheader(f"Medal Trend for {selected_country}")
+
+    fig = px.line(country_df, x='Year', y='Medal Count')
+    st.plotly_chart(fig)
+
+
