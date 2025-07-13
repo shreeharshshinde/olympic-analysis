@@ -68,3 +68,20 @@ def country_medal_tally(df, country):
 
     return medal_tally
 
+
+def top_athlete_in_country(df, country):
+    temp_df = df.dropna(subset=['Medal'])
+    temp_df = temp_df[temp_df['region'] == country]
+
+    top_athletes = temp_df['Name'].value_counts().reset_index()
+    top_athletes.columns = ['Athlete', 'Medal Count']
+
+    top_athletes = top_athletes.merge(
+        temp_df[['Name', 'Sport']], 
+        left_on='Athlete', 
+        right_on='Name',
+        how='left'
+    ).drop_duplicates(subset=['Athlete'])
+
+    return top_athletes[['Athlete', 'Sport', 'Medal Count']].head(10)
+

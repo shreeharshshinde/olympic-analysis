@@ -119,4 +119,8 @@ if user_menu == "Country-wise Analysis":
     fig = px.line(country_df, x='Year', y='Medal Count')
     st.plotly_chart(fig)
 
+    st.title(f"Top 10 Athletes in {selected_country}")
+    top_athletes = helper.top_athlete_in_country(df, selected_country)
+    st.table(top_athletes)
+
 
